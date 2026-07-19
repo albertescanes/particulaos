@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
+[Transfer]
+ProtectVersion=%A
+Verify=false
+
+[Source]
+Type=url-file
+Path=https://github.com/albertescanes/particulaos/releases/download/sysupdate/
+MatchPattern=%M_@v_%a.efi
+
+[Target]
+Type=regular-file
+Path=/EFI/Linux
+PathRelativeTo=boot
+MatchPattern=%M_@v_%a+@l-@d.efi \
+  %M_@v_%a+@l.efi \
+  %M_@v_%a.efi
+Mode=0644
+TriesLeft=3
+TriesDone=0
+InstancesMax=2

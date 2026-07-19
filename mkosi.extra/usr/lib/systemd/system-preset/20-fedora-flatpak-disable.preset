@@ -1,0 +1,2 @@
+# Avoid the addition of Fedora Flatpak remote
+disable flatpak-add-fedora-repos.service
