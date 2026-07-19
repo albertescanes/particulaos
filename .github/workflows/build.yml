@@ -1,0 +1,74 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/*
+      - mkosi.**
+  workflow_dispatch:
+  schedule:
+    - cron: 0 3 * * *
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Install mkosi
+        uses: systemd/mkosi@main
+
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Build image
+        run: mkosi -B
+
+      - name: Delete symbolic links
+        run: find mkosi.output -maxdepth 1 -type l -delete
+
+      - name: Generate checksum files
+        run: for f in *; do sha256sum $f > $f.sha256; done
+        working-directory: mkosi.output
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: artifacts
+          path: mkosi.output/*
+          retention-days: 1
+
+      - name: Generate checksum file for sysupdate
+        working-directory: mkosi.output
+        run: |
+          cat *.usr-x86-64.*.raw.xz.sha256 \
+              *.usr-x86-64-verity.*.raw.xz.sha256 \
+              *_x86-64.efi.sha256 \
+              > SHA256SUMS
+
+      - name: Release sysupdate elements
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: mkosi.output
+        run: |
+          gh release delete sysupdate --cleanup-tag -y || true
+          sleep 5
+          gh release create sysupdate \
+            *.usr-x86-64.*.raw.xz \
+            *.usr-x86-64-verity.*.raw.xz \
+            *_x86-64.efi \
+            SHA256SUMS \
+            --title sysupdate --notes "Assets consumed by systemd-sysupdate." --prerelease
+
+      - name: Release disk image
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: mkosi.output
+        run: |
+          version=$(<../mkosi.version)
+          gh release delete latest --cleanup-tag -y || true
+          sleep 5
+          gh release create latest ParticulaOS_*_x86-64.raw.xz* \
+            --title "ParticulaOS $version" --notes "ParticulaOS nightly build."
