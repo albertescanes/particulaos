@@ -36,7 +36,10 @@ After installing ParticulaOS and logging into your systemd-homed managed user, r
 the following to configure systemd-homed for the best experience:
 
 ```sh
-homectl update <user> --auto-resize-mode=off --disk-size=max --luks-discard=on
+homectl update \
+  --auto-resize-mode=off \
+  --disk-size=max \
+  --luks-discard=on
 ```
 
 Disabling the auto resize mode avoids slow system boot and shutdown. Enabling
