@@ -1,10 +1,13 @@
 [Unit]
 Description=Add the Flathub Flatpak remote for the current user
 ConditionPathExists=!%h/.local/share/flatpak/.flathub-initialized
+ConditionUser=!root
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
+Restart=on-failure
+RestartSec=10
 ExecStart=/usr/bin/flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 ExecStartPost=/usr/bin/touch %h/.local/share/flatpak/.flathub-initialized
 
