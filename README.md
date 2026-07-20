@@ -26,7 +26,8 @@ Only a minimal set of GNOME apps ships in the base image. Install the rest of th
 usual GNOME core app suite from Flathub:
 
 ```sh
-flatpak install flathub org.gnome.{baobab,Calculator,Calendar,Characters,clocks,Connections,Contacts,Decibels,Epiphany,font-viewer,Logs,Loupe,Maps,Music,NautilusPreviewer,Papers,Showtime,SimpleScan,Snapshot,TextEditor,Weather}
+flatpak -uy install flathub \
+  org.gnome.{baobab,Calculator,Calendar,Characters,clocks,Connections,Contacts,Decibels,Epiphany,font-viewer,Logs,Loupe,Maps,Music,NautilusPreviewer,Papers,Showtime,SimpleScan,Snapshot,TextEditor,Weather}
 ```
 
 ## Configuring systemd-homed after installation
